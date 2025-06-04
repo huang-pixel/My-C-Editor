@@ -1,19 +1,29 @@
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
+
+struct termios orig_termios;
+
+void disableRawMode() {
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+}
+
 void enableRawMode() {
-	struct termios raw; // raw: instance of struct termios
-        
 	// get the current terminal settings and copy them into raw struct
-	tcgetattr(STDIN_FILENO, &raw); // tcgetattr: terminal control get attr
-				       // STDIN_FILENO: standard input, keyboard
-				       // &raw: address where to store
+	// tcgetattr: terminal control get attr
+	// STDIN_FILENO: standard input, keyboard
+	// &: address where to store
+	tcgetattr(STDIN_FILENO, &orig_termios);
+	atexit(disableRawMode);
 
         // stop showing what I type on screen
-	raw.c_lflag &= ~(ECHO); // c_lflag: control local flags
-				// ECHO: bitflag 
-				// ~(ECHO): NOT ECHO filp the bits
-				// &=: bitwise AND then store the result back
+	// c_lflag: control local flags
+	// ECHO: bitflag 
+	// ~(ECHO): NOT ECHO filp the bits
+	// &=: bitwise AND then store the result back
+	struct termios raw = orig_termios;
+	raw.c_lflag &= ~(ECHO);
 
         // apply modified settings
 	// tcsetattr: terminal control set attr
