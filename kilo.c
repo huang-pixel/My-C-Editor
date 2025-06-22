@@ -25,7 +25,7 @@ void enableRawMode() {
 	// ~(ECHO): NOT ECHO filp the bits
 	// &=: bitwise AND then store the result back
 	struct termios raw = orig_termios;
-	raw.c_lflag &= ~(ECHO | ICANON);
+	raw.c_lflag &= ~(ECHO | ICANON | ISIG);
 
         // apply modified settings
 	// tcsetattr: terminal control set attr
